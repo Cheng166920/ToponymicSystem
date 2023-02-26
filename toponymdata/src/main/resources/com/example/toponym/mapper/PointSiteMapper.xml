@@ -1,0 +1,18 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.toponym.mapper.PointSiteMapper">
+    <resultMap id="PointSiteMap" type="com.example.toponym.model.PointSite">
+        <id property="gid" column="gid"/>
+        <result property="标识码" javaType="String" jdbcType="VARCHAR" column="标识码"/>
+        <result property="图上名称" javaType="String" jdbcType="VARCHAR" column="图上名称"/>
+        <result property="类别代码" javaType="String" jdbcType="VARCHAR" column="类别代码"/>
+        <result property="使用时间" javaType="String" jdbcType="VARCHAR" column="使用时间"/>
+        <result property="geom" javaType="String" jdbcType="VARCHAR" column="geom"/>
+    </resultMap>
+    <select id="findAll" resultMap="PointSiteMap">
+        SELECT gid, 标识码, 图上名称, 类别代码, 使用时间,
+        ST_AsGeoJson(geom) as geom
+
+        FROM pointsite
+    </select>
+
+</mapper>

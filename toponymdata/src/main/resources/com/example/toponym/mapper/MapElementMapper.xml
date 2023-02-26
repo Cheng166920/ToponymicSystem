@@ -1,0 +1,68 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.toponym.mapper.MapElementMapper">
+    <resultMap id="MapElementMap" type="com.example.toponym.model.MapElement">
+        <id property="id" column="id"/>
+        <result property="name" javaType="String" jdbcType="VARCHAR" column="name"/>
+        <result property="latitude" javaType="double" jdbcType="REAL" column="latitude"/>
+        <result property="longitude" javaType="double" jdbcType="REAL" column="longitude"/>
+        <result property="geoStr" javaType="String" jdbcType="VARCHAR" column="element_location"/>
+    </resultMap>
+    <select id="findAll" resultMap="MapElementMap">
+        SELECT id, name, longitude, latitude,
+        ST_AsGeoJson(element_location) as element_location
+
+        FROM map_elements
+    </select>
+
+    <select id="findById" parameterType="Long" resultMap="MapElementMap">
+        SELECT id, name, longitude, latitude,
+        ST_AsGeoJson(element_location) as element_location
+
+        FROM map_elements
+        where id = #{id}
+    </select>
+
+    <update id="updateMapElement" parameterType="com.example.toponym.model.MapElement" useGeneratedKeys="true" keyProperty="id" >
+        UPDATE map_elements
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name!=null">name=#{name},</if>
+            <if test="longitude!=null">longitude=#{longitude},</if>
+            <if test="latitude!=null">latitude=#{latitude},</if>
+            <if test="geoStr!=null">element_location=ST_GeomFromText(#{geoStr}, 4326),</if>
+
+        </trim>
+        WHERE id=#{id}
+    </update>
+
+
+    <insert id="addMapElement" parameterType="com.example.toponym.model.MapElement" useGeneratedKeys="true" keyProperty="id">
+        <selectKey keyProperty="id" resultType="Long" order="BEFORE">
+            SELECT nextval('map_elements_id_seq'::regclass)
+        </selectKey>
+        insert into map_elements(name, longitude, latitude, element_location)
+        values (#{name}, #{longitude}, #{latitude}, ST_GeomFromText(#{geoStr}, 4326))
+    </insert>
+
+    <!--        id删除-->
+    <delete id="deleteMapElement" parameterType="Long">
+        delete from map_elements where id = #{id}
+    </delete>
+
+    <!--    条件查询-->
+    <select id="findMapElementByCondition" parameterType="com.example.toponym.model.MapElement" resultMap="MapElementMap">
+        select  id, name, longitude, latitude,
+        ST_AsGeoJson(element_location) as element_location
+        FROM map_elements
+        where 1 = 1
+        <if test="name != null" >
+            and name like #{name}
+        </if>
+        <if test="longitude > 0">
+            and longitude = #{longitude}
+        </if>
+        <if test="latitude > 0">
+            and latitude = #{latitude}
+        </if>
+    </select>
+
+</mapper>

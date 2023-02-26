@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:54332/PlaceName?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+    #为了防止中文乱码，在URL中默认添加了?useUnicode=true&characterEncoding=UTF-8来使用UTF8编码，
+    #&allowMultiQueries=true表示支持批量更新，因为我的电脑时区紊乱，无法启动项目，因此需要加&serverTimezone=GMT%2B8
+    username: postgres
+    password: 202324
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+mybatis:
+  #  typeAliasesPackage: com.example.toponym
+  mapper-locations: classpath*:com/example/toponym/mapper/*.xml
+  # 实体类所在路径，填写改路径mapper文件中可以不写全路径
+  type-aliases-package: com.example.toponym.model
+
+redis:
+  port: 6379
+  host: localhost
+  password:
+  database: 1
+  timeout: 600
+  lettuce:
+    pool:
+      #连接池最大数
+      max-active: 50
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+
+server:
+  port: 8080
